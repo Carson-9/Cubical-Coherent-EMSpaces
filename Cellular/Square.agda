@@ -5,6 +5,7 @@ open import Cubical.Foundations.Path
 open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Functions.FunExtEquiv
 open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Transport
 
 open import Cellular.Dependent-Path
 open import coh
@@ -15,9 +16,6 @@ module Cellular.Square where
     private
         variable
             ℓ ℓ' : Level
-            A : Type ℓ
-            B : Type ℓ'
-    
 
     {-
                 a₀₁ ----------- a₁₁
@@ -182,30 +180,39 @@ module Cellular.Square where
             (SquareP-to-vertical (dep-doublecomp-filler A (symP a₀₋) a₋₀ a₁₋))
             glue
 
-    -- Dependent composition square with double refl :
-
-    square-double-refl :
-            ∀ {ℓ ℓ'} {A : Type ℓ} (B : A → Type ℓ')
-            {x : A} {p : x ≡ x} {x' : B x}
-            (p' : PathP (λ i → cong B p i) x' x')
-            → SquareP (λ i j → B (p (~ i ∧ j))) p' refl refl (symP p')
-            
-    square-double-refl B {p = p} p' i j = p' (~ i ∧ j)
 
 
-    postulate
-        dep-doublecomp-double-refl : ∀ {ℓ ℓ'} {A : Type ℓ} (B : A → Type ℓ')
-                {x : A} {p : x ≡ x} {x' : B x}
-                (p' : PathP (λ i → cong B p i) x' x')
-                → dep-doublecomp (λ i j → B (p (~ i ∧ j))) (symP p') refl refl ≡ (symP p')
-    ---dep-doublecomp-double-refl = {!   !}
-        {- dep-doublecomp-double-refl' : ∀ {ℓ ℓ'} {A : I → I → Type ℓ} (B : A → Type ℓ')
-                {x : A i0 i0} {y : A i0 i1} {p : PathP (λ j → A i0 j) x y} {square : SquareP A }
-                (p' : PathP (λ i → B (p i)) (B x) (B y))
-                → dep-doublecomp -}
+    -- Trop puissant, c'est faux
+    {-
+    toSquareP-comp : {ℓ : Level} {A : I → I → Type ℓ}
+        {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} {a₁₀ : A i1 i0} {a₁₁ : A i1 i1}
+        (a₀₋ : transport (λ j → A i0 j) a₀₀ ≡ a₀₁)
+        (a₁₋ : transport (λ j → A i1 j) a₁₀ ≡ a₁₁)
+        (a₋₀ : transport (λ i → A i i0) a₀₀ ≡ a₁₀)
+        (a₋₁ : transport (λ i → A i i1) a₀₁ ≡ a₁₁)
+        (glue : 
+            transport (λ j → A i1 j) (transport (λ i → A i i0) a₀₀) ≡ 
+            transport (λ i → A i i1) (transport (λ j → A i0 j) a₀₀))
+        → SquareP A (toPathP a₀₋) (toPathP a₁₋) (toPathP a₋₀) (toPathP a₋₁)
 
+    toSquareP-comp {A = A} {a₀₀ = a₀₀} {a₀₁ = a₀₁} {a₁₀ = a₁₀} {a₁₁ = a₁₁} a₀₋ a₁₋ a₋₀ a₋₁ glue =
+        toSquareP (toPathP a₀₋) (toPathP a₁₋) (toPathP a₋₀) (toPathP a₋₁) {! toPathP glue   !}
 
+        -- transport (i -> toPathP a0- i = toPathP a1- i) toPathP a-0 = toPathP a-1
+    -}
 
+   {-  toSquareP-compP : {ℓ : Level} {A : I → I → Type ℓ}
+        {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} {a₁₀ : A i1 i0} {a₁₁ : A i1 i1}
+        (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
+        (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
+        (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀)
+        (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
+        -- (glue : PathP (λ i → PathP (λ j → ((λ k → A (k ∨ i) (k ∧ i) ) ∙ (λ k → A (k ∨ (~ i)) (k ∧ (~ i)))) j) a₀₀ a₁₁) 
+            -- (compPathP a₋₀ a₁₋) (compPathP a₀₋ a₋₁))
+        (glue : ?)
+        → SquareP A a₀₋ a₁₋ a₋₀ a₋₁
+
+    toSquareP-compP a₀₋ a₁₋ a₋₀ a₋₁ glue = ? -}
 
     -- Regular Squares
 
@@ -335,7 +342,7 @@ module Cellular.Square where
 
     -- Squares over a type family
 
-    SquareP' : {A : Type ℓ} (B : A → Type ℓ)
+    SquareP' : {A : Type ℓ} (B : A → Type ℓ')
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         (original-square : Square a₀₋ a₁₋ a₋₀ a₋₁)
@@ -343,12 +350,12 @@ module Cellular.Square where
         (b₁₋ : PathP (λ i → B (a₁₋ i)) b₁₀ b₁₁)
         (b₋₀ : PathP (λ i → B (a₋₀ i)) b₀₀ b₁₀) 
         (b₋₁ : PathP (λ i → B (a₋₁ i)) b₀₁ b₁₁)
-        → Type ℓ 
+        → Type ℓ'
     SquareP' {A = A} B original-square b₀₋ b₁₋ b₋₀ b₋₁ =
         PathP (λ i → PathP (λ j → B (original-square i j)) (b₋₀ i) (b₋₁ i)) b₀₋ b₁₋
 
     
-    SquareP'-horizontal : {A : Type ℓ} (B : A → Type ℓ)
+    SquareP'-horizontal : {A : Type ℓ} (B : A → Type ℓ')
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         (original-square : Square-horizontal a₀₋ a₁₋ a₋₀ a₋₁)
@@ -356,11 +363,11 @@ module Cellular.Square where
         (b₁₋ : PathP (λ i → B (a₁₋ i)) b₁₀ b₁₁)
         (b₋₀ : PathP (λ i → B (a₋₀ i)) b₀₀ b₁₀) 
         (b₋₁ : PathP (λ i → B (a₋₁ i)) b₀₁ b₁₁)
-        → Type ℓ 
+        → Type ℓ' 
     SquareP'-horizontal {A = A} B original-square b₀₋ b₁₋ b₋₀ b₋₁ = 
         PathP (λ j → PathP (λ i → B (original-square j i)) (b₀₋ j) (b₁₋ j)) b₋₀ b₋₁
 
-    SquareP'-to-horizontal : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-to-horizontal : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -373,7 +380,7 @@ module Cellular.Square where
     SquareP'-to-horizontal {A = A} {B = B} s i j = s j i
 
 
-    SquareP'-to-vertical : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-to-vertical : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square-horizontal a₀₋ a₁₋ a₋₀ a₋₁}
@@ -385,7 +392,7 @@ module Cellular.Square where
         → SquareP' B (Square-to-vertical original-square) b₀₋ b₁₋ b₋₀ b₋₁
     SquareP'-to-vertical {A = A} {B = B} s i j = s j i
     
-    SquareP'-compose-top : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-compose-top : {A : Type ℓ} {B : A → Type ℓ'}
         {abg abd amg amd ahg ahd : A} 
         {bbg : B abg} {bmg : B amg} {bhg : B ahg} 
         {bbd : B abd} {bmd : B amd} {bhd : B ahd}
@@ -411,7 +418,7 @@ module Cellular.Square where
                                             ((top-b-square) i))
 
 
-    SquareP'-compose-right : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-compose-right : {A : Type ℓ} {B : A → Type ℓ'}
         {abg abm abd ahg ahm ahd : A} 
         {bbg : B abg} {bbm : B abm} {bbd : B abd} 
         {bhg : B ahg} {bhm : B ahm} {bhd : B ahd}
@@ -439,7 +446,7 @@ module Cellular.Square where
                     ((SquareP'-to-horizontal {B = B} right-b-square) j))
 
 
-    SquareP'-replace-base-square : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-base-square : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -454,7 +461,7 @@ module Cellular.Square where
     SquareP'-replace-base-square {B = B} {bl = bl}{br = br} {bb = bb} {bt = bt} square id = 
         transport (λ k → PathP (λ i → PathP (λ j → B (id k i j)) (bb i) (bt i)) bl br) square 
    
-    SquareP'-replace-edge-left-constant : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-edge-left-constant : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -473,7 +480,7 @@ module Cellular.Square where
                 id 
                 square
 
-    SquareP'-replace-edge-right-constant : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-edge-right-constant : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -492,7 +499,7 @@ module Cellular.Square where
                 square
                 id 
 
-    SquareP'-replace-edge-bot-constant : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-edge-bot-constant : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -513,7 +520,7 @@ module Cellular.Square where
         )
     
 
-    SquareP'-replace-edge-top-constant : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-edge-top-constant : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -534,7 +541,7 @@ module Cellular.Square where
         )
 
 
-    SquareP'-replace-edge-left : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-edge-left : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -566,7 +573,7 @@ module Cellular.Square where
                     br) 
                 comp-square
                 
-    SquareP'-replace-edge-top : {A : Type ℓ} {B : A → Type ℓ}
+    SquareP'-replace-edge-top : {A : Type ℓ} {B : A → Type ℓ'}
         {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
         {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
         {original-square : Square a₀₋ a₁₋ a₋₀ a₋₁}
@@ -634,7 +641,7 @@ module Cellular.Square where
 
 -}
     postulate
-        toSquareP' : {ℓ : Level} {A : Type ℓ} {B : A → Type ℓ}
+        toSquareP' : {ℓ : Level} {A : Type ℓ} {B : A → Type ℓ'}
             {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
             {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
             {original-square : Square a₀₋ a₁₋ a₋₀ ((sym a₀₋) ∙∙ a₋₀ ∙∙ a₁₋)}
@@ -657,3 +664,36 @@ module Cellular.Square where
         test-3 = SquareP'-replace-base-square {B = B} {new-base-square = Square-replace-edge-top original-square a-coherence}
                 (SquareP'-replace-edge-left {B = B} test-2 (symInvoP bl)) 
                 {!   !} -}
+
+
+
+
+    --postulate
+    --    SquareP'-from-comp-equality : {A : Type ℓ} {B : A → Type ℓ'}
+    --        {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
+    --        {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
+    --        {glue-a : a₋₀ ∙ a₁₋ ≡ a₀₋ ∙ a₋₁}
+    --        (b₀₋ : PathP (λ i → B (a₀₋ i)) b₀₀ b₀₁)
+    --        (b₁₋ : PathP (λ i → B (a₁₋ i)) b₁₀ b₁₁)
+    --        (b₋₀ : PathP (λ i → B (a₋₀ i)) b₀₀ b₁₀) 
+    --        (b₋₁ : PathP (λ i → B (a₋₁ i)) b₀₁ b₁₁)
+    --        (glue : PathP (λ i → PathP (λ j → B (glue-a i j)) b₀₀ b₁₁) (compPathP' {B = B} b₋₀ b₁₋) (compPathP' {B = B} b₀₋ b₋₁))
+    --        → SquareP' B (compPath→Square glue-a) b₀₋ b₁₋ b₋₀ b₋₁
+
+    -- SquareP'-from-comp-equality left right bot top glue = {!   !}
+
+    SquareP'-to-SquareP : {A : Type ℓ} {B : A → Type ℓ'}
+        {a₀₀ a₀₁ a₁₀ a₁₁ : A} {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁}
+        {a₀₋ : a₀₀ ≡ a₀₁} {a₋₀ : a₀₀ ≡ a₁₀} {a₁₋ : a₁₀ ≡ a₁₁} {a₋₁ : a₀₁ ≡ a₁₁}
+        {a-square : Square a₀₋ a₁₋ a₋₀  a₋₁}
+        {b₀₋ : PathP (λ i → B (a₀₋ i)) b₀₀ b₀₁}
+        {b₁₋ : PathP (λ i → B (a₁₋ i)) b₁₀ b₁₁}
+        {b₋₀ : PathP (λ i → B (a₋₀ i)) b₀₀ b₁₀} 
+        {b₋₁ : PathP (λ i → B (a₋₁ i)) b₀₁ b₁₁}
+        (square : SquareP' B a-square b₀₋ b₁₋ b₋₀ b₋₁)
+        → SquareP (λ i j → B (a-square i j)) b₀₋ b₁₋ b₋₀ b₋₁
+
+    SquareP'-to-SquareP square i j = square i j 
+        
+
+    --compPath→Square

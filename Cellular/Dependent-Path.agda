@@ -152,7 +152,7 @@ module Cellular.Dependent-Path where
     → PathP (λ i → A i i1) a₀₁ a₁₁
   dep-doublecomp A left-path bot-path right-path = transport (λ j → PathP (λ i → A i j) (left-path (~ j)) (right-path j)) bot-path
 
-  dep-doublecomp' : {ℓ : Level} {A : Type ℓ} {B : A → Type ℓ} {a₀₀ a₁₀ a₀₁ a₁₁ : A} 
+  dep-doublecomp' : {ℓ ℓ' : Level} {A : Type ℓ} {B : A → Type ℓ'} {a₀₀ a₁₀ a₀₁ a₁₁ : A} 
     {b₀₀ : B a₀₀} {b₀₁ : B a₀₁} {b₁₀ : B a₁₀} {b₁₁ : B a₁₁} 
     {la : a₀₀ ≡ a₀₁} {ba : a₀₀ ≡ a₁₀} {ra : a₁₀ ≡ a₁₁} 
     (left-path : PathP (λ j → B (la (~ j))) b₀₁ b₀₀)
@@ -248,3 +248,24 @@ module Cellular.Dependent-Path where
 
 
   
+
+
+
+  -- Trucs
+
+    -- thm :
+    -- ∀ {ℓ} {A : Type ℓ} (B : A → Type ℓ)
+    -- {x y z : A} (p : x ≡ y) (q : y ≡ z)
+    -- (f g h : (x : A) → B x)
+    -- (P : PathP ? f g) (Q : PathP ? g h) →
+  
+  -- TODO: variante de compPath→Square
+  comp-to-square : ∀ {ℓ} {A : Type ℓ} {x : A} (p : x ≡ x) → p ∙ p ≡ refl → Square p refl refl p
+  comp-to-square = {!!}
+  
+  bla :
+    ∀ {ℓ} {A : Type ℓ} (B : A → Type ℓ)
+    {x : A} (p : x ≡ x) (α : p ∙ p ≡ refl) {X : B x} (P : PathP (λ i → B (p i)) X X) →
+    PathP (λ j → PathP (λ i → B (α j i)) X X) (compPathP' {B = B} P P) (refl {x = X}) →
+    SquareP (λ i j → B (comp-to-square p α i j)) P refl refl P
+  bla B p α P coh = toPathP {!substInPathsR ? ?!}

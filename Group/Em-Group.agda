@@ -103,8 +103,7 @@ module Group.Em-Group where
     data Delooping-2 {ob-set : Type ℓ} (g : Group ob-set) : Type (ℓ-suc ℓ) where
         base₂ : Delooping-2 g
         [_]₂ : ob-set → base₂ ≡ base₂
-        [0]₂ : [ Group.1g g ]₂ ≡ refl
-        incl-functorial-1₂ : (x y : ob-set) → PathP (λ j → base₂ ≡ ([ x ]₂ j)) [ y ]₂ [ (Group._×_ g x y) ]₂
+        incl-functorial-1₂ : (x y : ob-set) → PathP (λ j → base₂ ≡ ([ x ]₂ j)) [ y ]₂ [ (Group._×_ g y x) ]₂
         {- incl-functorial-2₂ : (x y z : ob-set) → Square
             (incl-functorial-1₂ (Group._×_ g x y) z)
             ((cong (λ t → [ x ]₂ ∙ t) (incl-functorial-1₂ y z)) ∙ (assoc [ x ]₂ [ y ]₂ [ z ]₂))
@@ -115,48 +114,57 @@ module Group.Em-Group where
     Delooping-2-elim : {ℓ : Level} {A : Type (ℓ-suc ℓ)} {ob-set  : Type ℓ} {g : Group ob-set}
         (a : A)
         (incl : ob-set → a ≡ a)
-        (zero-incl : incl (Group.1g g) ≡ refl)
-        (incl-fun : (x y : ob-set) → PathP (λ j → a ≡ (incl x) j) (incl y) (incl (Group._×_ g x y)))
+        (incl-fun : (x y : ob-set) → PathP (λ j → a ≡ (incl x) j) (incl y) (incl (Group._×_ g y x)))
         (trunc : is2Groupoid A)
         → (Delooping-2 g) → A
 
-    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl zero-incl incl-fun trunc base₂ = a
-    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl zero-incl incl-fun trunc ([ x ]₂ i) = (incl x) i
-    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl zero-incl incl-fun trunc ([0]₂ i j) = zero-incl i j
-    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl zero-incl incl-fun trunc (incl-functorial-1₂ x y i j) = incl-fun x y i j
-    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl zero-incl incl-fun trunc (2-trunc x y p q r s t u i j k l) = 
+    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl incl-fun trunc base₂ = a
+    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl incl-fun trunc ([ x ]₂ i) = (incl x) i
+    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl incl-fun trunc (incl-functorial-1₂ x y i j) = incl-fun x y i j
+    Delooping-2-elim {A = A} {ob-set = ob-set} {g = g} a incl incl-fun trunc (2-trunc x y p q r s t u i j k l) = 
         trunc
-        (Delooping-2-elim a incl zero-incl incl-fun trunc x)
-        (Delooping-2-elim a incl zero-incl incl-fun trunc y)
-        (λ i → Delooping-2-elim a incl zero-incl incl-fun trunc (p i))
-        (λ i → Delooping-2-elim a incl zero-incl incl-fun trunc (q i))
-        (λ i j → Delooping-2-elim a incl zero-incl incl-fun trunc (r i j))
-        (λ i j → Delooping-2-elim a incl zero-incl incl-fun trunc (s i j))
-        (λ i j k → Delooping-2-elim a incl zero-incl incl-fun trunc (t i j k))
-        (λ i j k → Delooping-2-elim a incl zero-incl incl-fun trunc (u i j k))
+        (Delooping-2-elim a incl incl-fun trunc x)
+        (Delooping-2-elim a incl incl-fun trunc y)
+        (λ i → Delooping-2-elim a incl incl-fun trunc (p i))
+        (λ i → Delooping-2-elim a incl incl-fun trunc (q i))
+        (λ i j → Delooping-2-elim a incl incl-fun trunc (r i j))
+        (λ i j → Delooping-2-elim a incl incl-fun trunc (s i j))
+        (λ i j k → Delooping-2-elim a incl incl-fun trunc (t i j k))
+        (λ i j k → Delooping-2-elim a incl incl-fun trunc (u i j k))
         i j k l
         
+    Delooping-2-elim-base : {ℓ : Level} {A : Type (ℓ-suc ℓ)} {ob-set  : Type ℓ} {g : Group ob-set}
+        (a : A) (incl : ob-set → a ≡ a)
+        (incl-fun : (x y : ob-set) → PathP (λ j → a ≡ (incl x) j) (incl y) (incl (Group._×_ g y x)))
+        (trunc : is2Groupoid A) 
+        → Delooping-2-elim {g = g} a incl incl-fun trunc base₂ ≡ a
+    Delooping-2-elim-base a incl incl-fun trunc = refl
+
+    Delooping-2-elim-incl : {ℓ : Level} {A : Type (ℓ-suc ℓ)} {ob-set  : Type ℓ} {g : Group ob-set}
+        (a : A) (incl : ob-set → a ≡ a)
+        (incl-fun : (x y : ob-set) → PathP (λ j → a ≡ (incl x) j) (incl y) (incl (Group._×_ g y x)))
+        (trunc : is2Groupoid A) 
+        → (x : ob-set) → cong (Delooping-2-elim {g = g} a incl incl-fun trunc) ([ x ]₂) ≡ incl x
+    Delooping-2-elim-incl a incl incl-fun trunc x = refl
 
     Delooping-2-ind : {ℓ : Level} {ob-set  : Type ℓ} {g : Group ob-set} {P : (Delooping-2 g) → Type (ℓ-suc ℓ)}
         (a : P base₂)
         (over-incl : (x : ob-set) → PathP (λ i → P ([ x ]₂ i) ) a a)
-        (over-incl-zero : PathP (λ i → PathP (λ j → P ([0]₂ i j)) a a) (over-incl (Group.1g g)) refl)
-        (over-incl-fun : (x y : ob-set) → PathP (λ i → PathP (λ j → P (incl-functorial-1₂ x y i j)) a (over-incl x i)) (over-incl y) (over-incl (Group._×_ g x y)))
+        (over-incl-fun : (x y : ob-set) → PathP (λ i → PathP (λ j → P (incl-functorial-1₂ x y i j)) a (over-incl x i)) (over-incl y) (over-incl (Group._×_ g y x)))
         (trunc : isOfHLevelDep 4 P)
         → (x : Delooping-2 g) → P x
 
-    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olz olf trunc base₂ = a
-    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olz olf trunc ([ x ]₂ i) = (ol x) i
-    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olz olf trunc ([0]₂ i j) = olz i j
-    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olz olf trunc (incl-functorial-1₂ x y j i) = (olf x y) j i
-    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olz olf trunc (2-trunc x y p q r s t u i j k l) = trunc
-        (Delooping-2-ind a ol olz olf trunc x)
-        (Delooping-2-ind a ol olz olf trunc y)
-        (λ i → Delooping-2-ind a ol olz olf trunc (p i))
-        (λ i → Delooping-2-ind a ol olz olf trunc (q i))
-        (λ i j → Delooping-2-ind a ol olz olf trunc (r i j))
-        (λ i j → Delooping-2-ind a ol olz olf trunc (s i j))
-        (λ i j k → Delooping-2-ind a ol olz olf trunc (t i j k))
-        (λ i j k → Delooping-2-ind a ol olz olf trunc (u i j k))
+    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olf trunc base₂ = a
+    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olf trunc ([ x ]₂ i) = (ol x) i
+    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olf trunc (incl-functorial-1₂ x y j i) = (olf x y) j i
+    Delooping-2-ind {ob-set = ob-set} {g = g} {P = P} a ol olf trunc (2-trunc x y p q r s t u i j k l) = trunc
+        (Delooping-2-ind a ol olf trunc x)
+        (Delooping-2-ind a ol olf trunc y)
+        (λ i → Delooping-2-ind a ol olf trunc (p i))
+        (λ i → Delooping-2-ind a ol olf trunc (q i))
+        (λ i j → Delooping-2-ind a ol olf trunc (r i j))
+        (λ i j → Delooping-2-ind a ol olf trunc (s i j))
+        (λ i j k → Delooping-2-ind a ol olf trunc (t i j k))
+        (λ i j k → Delooping-2-ind a ol olf trunc (u i j k))
         (λ i j k l → 2-trunc x y p q r s t u i j k l)
         i j k l

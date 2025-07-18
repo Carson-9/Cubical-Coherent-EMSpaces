@@ -4,7 +4,17 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.GroupoidLaws
 open import coh
 
+open import Agda.
+
 module Cellular.Globular where
+
+    Glob : ∀ {ℓ} {A : Type ℓ} {x y : A} (p q : x ≡ y) → Type ℓ
+    Glob p q = p ≡ q
+
+    GlobP : ∀ {ℓ} {A : Type ℓ} {B : A → Type ℓ} {x : A} {y : A} {p q : x ≡ y} {x' : B x} {y' : B y}
+        {g : Glob p q} (P : PathP (λ i → B (p i)) x' y') (Q : PathP (λ i → B (q i)) x' y') → Type ℓ
+    GlobP {A = A} {B = B} {x = x} {y = y} {x' = x'} {y' = y'} {g = g} P Q = 
+        PathP (λ i → PathP (λ j → B (g i j)) x' y') P Q 
 
     glob-compose-horizontal : {A : Type} {a b c : A} {p q : a ≡ b} {r s : b ≡ c} (lCell : p ≡ q) (rCell : r ≡ s)
         → (p ∙ r ≡ q ∙ s)
@@ -34,12 +44,12 @@ module Cellular.Globular where
     r-id-glob : {A : Type} {a b : A} (p : a ≡ b) → (p ∙ refl ≡ p)
     r-id-glob {A} p = right-id {A = A} p
 
-    ▹-assoc : {A : Type} {a b c d : A} {p q : a ≡ b} {r s : b ≡ c} {t u : c ≡ d} (lCell : (p ≡ q)) (midCell : (r ≡ s)) (rCell : (t ≡ u)) 
-        → (lCell ▹ midCell) ▹ rCell ≡ lCell ▹ midCell ▹ rCell
+    -- ▹-assoc : {A : Type} {a b c d : A} {p q : a ≡ b} {r s : b ≡ c} {t u : c ≡ d} (lCell : (p ≡ q)) (midCell : (r ≡ s)) (rCell : (t ≡ u)) 
+    --    → (lCell ▹ midCell) ▹ rCell ≡ lCell ▹ midCell ▹ rCell
 
     -- transport dépendant ?
 
-    ▹-assoc lCell midCell rCell = ?
+    -- ▹-assoc lCell midCell rCell = ?
 
     -- ▿-assoc
     -- exchange-law

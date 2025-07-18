@@ -2,14 +2,14 @@
 
 module BZ2.Z2 where
 
-    open import Cubical.Foundations.Prelude public
-    open import Cubical.Foundations.Univalence public
-    open import Cubical.Foundations.Function public
-    open import Cubical.Foundations.Isomorphism public
-    open import Cubical.Foundations.Equiv public
-    open import Cubical.Data.Bool public
-    open import Agda.Builtin.Bool renaming (false to zero; true to one) public
-    open import Cubical.Foundations.Isomorphism renaming (Iso to _≅_) public
+    open import Cubical.Foundations.Prelude
+    open import Cubical.Foundations.Univalence
+    open import Cubical.Foundations.Function
+    open import Cubical.Foundations.Isomorphism
+    open import Cubical.Foundations.Equiv
+    open import Cubical.Data.Bool
+    open import Agda.Builtin.Bool renaming (false to zero; true to one)
+    open import Cubical.Foundations.Isomorphism renaming (Iso to _≅_)
 
     ℤ₂ = Bool
 
